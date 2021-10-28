@@ -6,7 +6,11 @@ import { getPosts } from "../config/api";
 import Link from "next/link";
 import { useState } from "react";
 export default function Home() {
-  const { data: posts, isLoading } = useQuery("posts", getPosts);
+  const { data: posts } = useQuery("posts", getPosts);
+  const rick = useQuery("characters", async () => {
+    const res = await fetch("https://rickandmortyapi.com/api/character");
+    return await res.json();
+  });
 
   const [show, setShow] = useState(false);
   return (
@@ -23,8 +27,14 @@ export default function Home() {
           </div>
         ))}
 
-        <button onClick={() => setShow((prev) => !prev)}>Hola</button>
-        {show && <p>Mostrando jajajaja</p>}
+        {rick.isSuccess && (
+          <div>
+            <button onClick={() => setShow((prev) => !prev)}>
+              {show ? "Ocultar" : "Mostrar"} primer personaje
+            </button>
+            {show && <p>{rick.data.results[0].name}</p>}
+          </div>
+        )}
       </div>
     </div>
   );
